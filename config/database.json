@@ -1,8 +1,0 @@
-{
-  "kind": "mysql",
-  "address": "database-1.ciouqrlocuyp.ap-northeast-2.rds.amazonaws.com",
-  "port": "3306",
-  "username": "hoyaspark",
-  "password": "ghditm!7861",
-  "name": "gitime"
-}
