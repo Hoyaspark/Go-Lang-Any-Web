@@ -11,32 +11,33 @@ import (
 
 func main() {
 
-	db := config.NewMySQL()
+	db := config.NewDatabase()
 
 	defer db.Close()
 
-	apiRouter := chi.NewRouter()
-
 	r := chi.NewRouter()
 
-	r.Use(middleware.DefaultLogger)
-	r.Use(middleware.Recoverer)
+	apiRouter := chi.NewRouter()
 
-	r.Group(func(r chi.Router) {
-		r.Get("/auth/login", router.New(db))
+	apiRouter.Use(middleware.DefaultLogger)
+	apiRouter.Use(middleware.Recoverer)
+
+	apiRouter.Group(func(r chi.Router) {
+		r.Post("/auth/login", router.Login(db))
+		r.Get("/auth/register", nil)
 	})
 
-	r.Group(func(r chi.Router) {
+	apiRouter.Group(func(r chi.Router) {
 		r.Use(router.AuthMiddleware)
 
-		r.Get("/board", router.New(db))
+		r.Get("/board", nil)
 	})
 
-	apiRouter.Mount("/api", r)
+	r.Mount("/api", apiRouter)
 
 	s := &http.Server{
 		Addr:         ":8080",
-		Handler:      apiRouter,
+		Handler:      r,
 		ReadTimeout:  3 * time.Second,
 		WriteTimeout: 3 * time.Second,
 		IdleTimeout:  5 * time.Second,

@@ -2,8 +2,8 @@ package router
 
 import (
 	"anyweb/config"
+	"anyweb/user"
 	"anyweb/util"
-	"context"
 	"fmt"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
@@ -28,7 +28,7 @@ func LoggingMiddleware(h http.Handler) http.Handler {
 
 		logger.Log("connect", nil)
 
-		ctx = context.WithValue(ctx, config.Logger, logger)
+		//ctx = context.WithValue(ctx, config.Logger, logger)
 
 		r = r.WithContext(ctx)
 
@@ -42,12 +42,12 @@ func AuthMiddleware(h http.Handler) http.Handler {
 
 		ctx := r.Context()
 
-		logger := ctx.Value(config.Logger).(util.Logger)
+		//logger := ctx.Value(config.Logger).(util.Logger)
 
 		tokenString := r.Header.Get("Authorization")
 
 		if tokenString == "" {
-			logger.Log("Not Authorized", nil)
+			//logger.Log("Not Authorized", nil)
 			rw.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -61,13 +61,13 @@ func AuthMiddleware(h http.Handler) http.Handler {
 
 		if err != nil {
 			rw.WriteHeader(http.StatusUnauthorized)
-			logger.Log("", err)
+			//logger.Log("", err)
 			return
 		}
 
 		if claims, ok := token.Claims.(jwt.MapClaims); ok {
 			email := claims["userEmail"].(string)
-			ctx = context.WithValue(ctx, config.JWTInfo, email)
+			ctx = user.NewContext(ctx, &user.User{Email: email})
 			r = r.WithContext(ctx)
 		}
 
