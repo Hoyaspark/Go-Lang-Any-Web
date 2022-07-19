@@ -52,5 +52,4 @@ func Join(db *sql.DB) http.HandlerFunc {
 		rw.Write([]byte("Success"))
 
 	}
-
 }

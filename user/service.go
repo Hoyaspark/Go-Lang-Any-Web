@@ -14,11 +14,8 @@ var (
 )
 
 func Login(ctx context.Context, u *User) (*util.JwtToken, error) {
-	context, cancel := context.WithCancel(ctx)
 
-	defer cancel()
-
-	db, err := config.DatabaseFromContext(context)
+	db, err := config.DatabaseFromContext(ctx)
 
 	if err != nil {
 		return nil, err
@@ -77,9 +74,7 @@ func Join(ctx context.Context, u *User) error {
 		return err
 	}
 
-	err = tx.Commit()
-
-	if err != nil {
+	if err := tx.Commit(); err != nil {
 		return err
 	}
 

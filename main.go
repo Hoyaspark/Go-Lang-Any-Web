@@ -30,8 +30,9 @@ func main() {
 
 	apiRouter.Group(func(r chi.Router) {
 		r.Use(router.AuthMiddleware)
-
-		r.Get("/board", nil)
+		r.Get("/board", func(rw http.ResponseWriter, r *http.Request) {
+			rw.Write([]byte("Hello, Worlds!"))
+		})
 	})
 
 	r.Mount("/api", apiRouter)
