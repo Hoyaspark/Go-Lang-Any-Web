@@ -5,10 +5,8 @@ import (
 	"net/http"
 )
 
-type AuthRouter *http.ServeMux
+func New(db *sql.DB) http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 
-func New(db *sql.DB) AuthRouter {
-	mux := http.NewServeMux()
-
-	return AuthRouter(mux)
+	})
 }

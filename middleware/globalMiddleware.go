@@ -16,14 +16,17 @@ func LoggingMiddleware(h http.Handler) http.Handler {
 
 		ctx := r.Context()
 
+		uuid := uuid.NewString()
+
 		logger := util.LoggerFunc(func(message string, err error) {
-			uuid := uuid.NewString()
 			if err != nil {
-				fmt.Printf("[Error][Request][%s][%s] : %s", uuid, time.Now().Format(time.RFC3339), err.Error())
+				fmt.Printf("[Error][Request][%s][%s] : %s\n", uuid, time.Now().Format(time.RFC3339), err.Error())
 				return
 			}
-			fmt.Printf("[Normal][Request][%s][%s] : %s", uuid, time.Now().Format(time.RFC3339), message)
+			fmt.Printf("[Normal][Request][%s][%s] : %s\n", uuid, time.Now().Format(time.RFC3339), message)
 		})
+
+		logger.Log("connect", nil)
 
 		ctx = context.WithValue(ctx, config.Logger, logger)
 
@@ -39,9 +42,12 @@ func AuthMiddleware(h http.Handler) http.Handler {
 
 		ctx := r.Context()
 
+		logger := ctx.Value(config.Logger).(util.Logger)
+
 		tokenString := r.Header.Get("Authorization")
 
 		if tokenString == "" {
+			logger.Log("Not Authorized", nil)
 			rw.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -54,7 +60,6 @@ func AuthMiddleware(h http.Handler) http.Handler {
 		})
 
 		if err != nil {
-			logger := ctx.Value(config.Logger).(util.Logger)
 			rw.WriteHeader(http.StatusUnauthorized)
 			logger.Log("", err)
 			return
