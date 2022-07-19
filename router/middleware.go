@@ -1,11 +1,9 @@
 package router
 
 import (
-	"anyweb/config"
 	"anyweb/user"
 	"anyweb/util"
 	"fmt"
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 	"net/http"
 	"time"
@@ -49,34 +47,24 @@ func AuthMiddleware(h http.Handler) http.Handler {
 
 		ctx := r.Context()
 
-		//logger := ctx.Value(config.Logger).(util.Logger)
-
 		tokenString := r.Header.Get("Authorization")
 
 		if tokenString == "" {
-			//logger.Log("Not Authorized", nil)
 			rw.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
-		token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
-			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("Unexpected signing method: %v", t.Header["alg"])
-			}
-			return config.AuthProperties.JwtSecret, nil
-		})
+		u, err := util.ParseJwtToken(tokenString)
 
 		if err != nil {
 			rw.WriteHeader(http.StatusUnauthorized)
-			//logger.Log("", err)
+			rw.Write([]byte(err.Error()))
 			return
 		}
 
-		if claims, ok := token.Claims.(jwt.MapClaims); ok {
-			email := claims["userEmail"].(string)
-			ctx = user.NewContext(ctx, &user.User{Email: email})
-			r = r.WithContext(ctx)
-		}
+		ctx = user.ContextWithUser(ctx, u)
+
+		r = r.WithContext(ctx)
 
 		h.ServeHTTP(rw, r)
 	})

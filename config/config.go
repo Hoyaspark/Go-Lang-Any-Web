@@ -35,7 +35,7 @@ func init() {
 }
 
 func setAuthProperties() {
-	f, err := os.Open("config/auth.json")
+	f, err := os.Open("env/auth.json")
 
 	checkErrForPanic(err)
 
@@ -45,7 +45,7 @@ func setAuthProperties() {
 }
 
 func setDBProperties() {
-	f, err := os.Open("config/database.json")
+	f, err := os.Open("env/database.json")
 
 	checkErrForPanic(err)
 

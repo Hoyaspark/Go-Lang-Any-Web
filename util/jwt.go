@@ -2,6 +2,8 @@ package util
 
 import (
 	"anyweb/config"
+	"anyweb/user"
+	"fmt"
 	"github.com/golang-jwt/jwt/v4"
 	"time"
 )
@@ -29,4 +31,21 @@ func GenerateJwtToken(email string) (*JwtToken, error) {
 
 	return &JwtToken{Type: "Bearer", AcceptToken: tokenString, ExpiredAt: exp}, nil
 
+}
+
+func ParseJwtToken(token string) (*user.User, error) {
+	t, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
+		}
+		return config.AuthProperties.JwtSecret, nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	m := t.Claims.(jwt.MapClaims)
+
+	return &user.User{Email: m["userEmail"].(string)}, nil
 }
