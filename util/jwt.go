@@ -14,18 +14,19 @@ type JwtToken struct {
 }
 
 func GenerateJwtToken(email string) (*JwtToken, error) {
+	exp := time.Now().Add(time.Minute * 30)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"email": email,
-		"exp":   time.Now().Add(time.Minute * 30).Unix(),
+		"exp":   exp,
 	})
 
-	tokenString, err := token.SignedString(config.AuthProperties.JwtSecret)
+	tokenString, err := token.SignedString([]byte(config.AuthProperties.JwtSecret))
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &JwtToken{Type: "Bearer", AcceptToken: tokenString}, nil
+	return &JwtToken{Type: "Bearer", AcceptToken: tokenString, ExpiredAt: exp}, nil
 
 }

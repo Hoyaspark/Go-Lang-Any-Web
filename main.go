@@ -21,10 +21,11 @@ func main() {
 
 	apiRouter.Use(middleware.DefaultLogger)
 	apiRouter.Use(middleware.Recoverer)
+	apiRouter.Use(router.ResponseMiddleware)
 
 	apiRouter.Group(func(r chi.Router) {
 		r.Post("/auth/login", router.Login(db))
-		r.Get("/auth/register", nil)
+		r.Post("/auth/register", router.Join(db))
 	})
 
 	apiRouter.Group(func(r chi.Router) {

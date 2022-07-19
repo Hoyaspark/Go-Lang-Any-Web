@@ -37,6 +37,13 @@ func LoggingMiddleware(h http.Handler) http.Handler {
 	})
 }
 
+func ResponseMiddleware(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		rw.Header().Set("Content-Type", "application/json")
+		h.ServeHTTP(rw, r)
+	})
+}
+
 func AuthMiddleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 

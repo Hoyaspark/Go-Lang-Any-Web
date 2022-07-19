@@ -41,6 +41,10 @@ func (u *User) EncryptPassword() string {
 
 }
 
+func (u *User) MatchPassword(password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(password), []byte(u.Password))
+}
+
 func NewContext(ctx context.Context, u *User) context.Context {
 	return context.WithValue(ctx, config.UserKey, u)
 }

@@ -33,6 +33,24 @@ func Login(db *sql.DB) http.HandlerFunc {
 	}
 }
 
-func Join() {
+func Join(db *sql.DB) http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		var u user.User
+
+		err := json.NewDecoder(r.Body).Decode(&u)
+
+		if err != nil {
+			panic(err)
+		}
+
+		if err := user.Join(config.ContextWithDatabase(r.Context(), db), &u); err != nil {
+			rw.WriteHeader(http.StatusBadRequest)
+			rw.Write([]byte(err.Error()))
+			return
+		}
+
+		rw.Write([]byte("Success"))
+
+	}
 
 }
