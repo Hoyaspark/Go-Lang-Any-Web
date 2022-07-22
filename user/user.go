@@ -19,6 +19,10 @@ type User struct {
 	gender   bool
 }
 
+func NewUser(email string) *User {
+	return &User{email: email}
+}
+
 func (u *User) Email() string {
 	return u.email
 }

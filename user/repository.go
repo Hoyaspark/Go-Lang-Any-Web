@@ -37,9 +37,9 @@ func (ur *userRepository) findPasswordByEmail(param *LoginRequestBody) (*User, e
 
 	defer tx.Rollback()
 
-	var u *User
+	var u User
 
-	if err := tx.QueryRow("SELECT u.password FROM user as u WHERE u.email = ?", param.Email).Scan(u.password); err != nil {
+	if err := tx.QueryRow("SELECT u.password FROM user as u WHERE u.email = ?", param.Email).Scan(&u.password); err != nil {
 		return nil, err
 	}
 
@@ -47,5 +47,5 @@ func (ur *userRepository) findPasswordByEmail(param *LoginRequestBody) (*User, e
 		return nil, err
 	}
 
-	return u, nil
+	return &u, nil
 }

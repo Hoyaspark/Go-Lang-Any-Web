@@ -53,8 +53,10 @@ func Join(ctx context.Context, u *User) error {
 
 	defer tx.Rollback()
 
-	var count int
-	if err := tx.QueryRow("SELECT count(*) FROM user AS u WHERE u.email = ?", u.email).Scan(&count); err != nil || count != 0 {
+	row, err := tx.Query("SELECT u.id FROM user AS u WHERE u.email = ?", u.email)
+	row.Next()
+	if err != nil {
+		log.Println(err)
 		return ErrDuplicateEmail
 	}
 
@@ -69,21 +71,21 @@ func Join(ctx context.Context, u *User) error {
 	return nil
 }
 
-func GetUserInfo(ctx context.Context, u *User) error {
-	db, err := config.DatabaseFromContext(ctx)
-
-	if err != nil {
-		return err
-	}
-
-	tx, err := db.Begin()
-
-	if err != nil {
-		return err
-	}
-
-	defer tx.Rollback()
-
-	tx.QueryRow("SELECT * FROM user as u WHERE u.email = ?", u.email).Scan()
-
-}
+//func GetUserInfo(ctx context.Context, u *User) error {
+//	db, err := config.DatabaseFromContext(ctx)
+//
+//	if err != nil {
+//		return err
+//	}
+//
+//	tx, err := db.Begin()
+//
+//	if err != nil {
+//		return err
+//	}
+//
+//	defer tx.Rollback()
+//
+//	tx.QueryRow("SELECT * FROM user as u WHERE u.email = ?", u.email).Scan()
+//
+//}

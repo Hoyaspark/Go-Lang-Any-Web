@@ -26,7 +26,7 @@ func main() {
 	apiRouter.Use(router.ResponseMiddleware)
 
 	apiRouter.Group(func(r chi.Router) {
-		r.Post("/auth/login", router.Login(db))
+		r.Post("/auth/login", router.LoginRoute(db))
 		r.Post("/auth/register", router.Join(db))
 		r.Get("/test", func(rw http.ResponseWriter, r *http.Request) {
 			log.Println(runtime.NumGoroutine())

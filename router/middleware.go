@@ -67,7 +67,7 @@ func AuthMiddleware(h http.Handler) http.Handler {
 			return
 		}
 
-		ctx = user.ContextWithUser(ctx, &user.User{Email: e})
+		ctx = user.ContextWithUser(ctx, user.NewUser(e))
 
 		r = r.WithContext(ctx)
 

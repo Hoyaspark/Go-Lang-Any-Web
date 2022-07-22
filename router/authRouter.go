@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func Login(db *sql.DB) http.HandlerFunc {
+func LoginRoute(db *sql.DB) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 
 		var param user.LoginRequestBody
@@ -54,21 +54,22 @@ func Join(db *sql.DB) http.HandlerFunc {
 	}
 }
 
-func MyPage(db *sql.DB) http.HandlerFunc {
-	return func(res http.ResponseWriter, req *http.Request) {
-		ctx := req.Context()
-
-		ctx = config.ContextWithDatabase(ctx, db)
-
-		req = req.WithContext(ctx)
-
-		u, err := user.UserFromContext(ctx)
-
-		if err != nil {
-			res.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-
-	}
-
-}
+//
+//func MyPage(db *sql.DB) http.HandlerFunc {
+//	return func(res http.ResponseWriter, req *http.Request) {
+//		ctx := req.Context()
+//
+//		ctx = config.ContextWithDatabase(ctx, db)
+//
+//		req = req.WithContext(ctx)
+//
+//		u, err := user.UserFromContext(ctx)
+//
+//		if err != nil {
+//			res.WriteHeader(http.StatusUnauthorized)
+//			return
+//		}
+//
+//	}
+//
+//}
