@@ -1,4 +1,4 @@
-package user
+package auth
 
 import (
 	"anyweb/config"
@@ -15,7 +15,7 @@ func Login(ctx context.Context, param *LoginRequestBody) (*util.JwtToken, error)
 		return nil, err
 	}
 
-	repo := NewUserRepository(ctx, nil, db)
+	repo := NewMemberRepository(ctx, nil, db)
 
 	u, err := repo.findPasswordByEmail(param.Email)
 
@@ -39,20 +39,20 @@ func Join(ctx context.Context, param *JoinRequestBody) error {
 		return err
 	}
 
-	repo := NewUserRepository(ctx, nil, db)
+	repo := NewMemberRepository(ctx, nil, db)
 
 	if _, err := repo.findByEmail(param.Email); err != nil {
 		return err
 	}
 
-	if err := repo.InsertIntoUser(NewUser(param.Email, EncryptPassword(param.Password), param.Name, param.Gender)); err != nil {
+	if err := repo.InsertIntoUser(NewMember(param.Email, EncryptPassword(param.Password), param.Name, param.Gender)); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-//func GetUserInfo(ctx context.Context, u *User) error {
+//func GetUserInfo(ctx context.Context, u *Member) error {
 //	db, err := config.DatabaseFromContext(ctx)
 //
 //	if err != nil {
@@ -67,6 +67,6 @@ func Join(ctx context.Context, param *JoinRequestBody) error {
 //
 //	defer tx.Rollback()
 //
-//	tx.QueryRow("SELECT * FROM user as u WHERE u.email = ?", u.email).Scan()
+//	tx.QueryRow("SELECT * FROM auth as u WHERE u.email = ?", u.email).Scan()
 //
 //}

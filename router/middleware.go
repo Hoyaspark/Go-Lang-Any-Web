@@ -1,7 +1,7 @@
 package router
 
 import (
-	"anyweb/user"
+	"anyweb/auth"
 	"anyweb/util"
 	"errors"
 	"net/http"
@@ -67,7 +67,7 @@ func AuthMiddleware(h http.Handler) http.Handler {
 			return
 		}
 
-		ctx = user.ContextWithUser(ctx, user.NewUser("", e, "", false))
+		ctx = auth.ContextWithMember(ctx, auth.NewMember("", e, "", false))
 
 		r = r.WithContext(ctx)
 

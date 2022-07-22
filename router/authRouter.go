@@ -1,8 +1,8 @@
 package router
 
 import (
+	"anyweb/auth"
 	"anyweb/config"
-	"anyweb/user"
 	"database/sql"
 	"encoding/json"
 	"net/http"
@@ -11,13 +11,13 @@ import (
 func LoginRoute(db *sql.DB) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 
-		var param user.LoginRequestBody
+		var param auth.LoginRequestBody
 
 		if err := json.NewDecoder(r.Body).Decode(&param); err != nil {
 			panic(err)
 		}
 
-		res, err := user.Login(config.ContextWithDatabase(r.Context(), db), &param)
+		res, err := auth.Login(config.ContextWithDatabase(r.Context(), db), &param)
 
 		if err != nil {
 			rw.WriteHeader(http.StatusBadRequest)
@@ -33,9 +33,9 @@ func LoginRoute(db *sql.DB) http.HandlerFunc {
 	}
 }
 
-func Join(db *sql.DB) http.HandlerFunc {
+func JoinRoute(db *sql.DB) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
-		var param user.JoinRequestBody
+		var param auth.JoinRequestBody
 
 		err := json.NewDecoder(r.Body).Decode(&param)
 
@@ -43,7 +43,7 @@ func Join(db *sql.DB) http.HandlerFunc {
 			panic(err)
 		}
 
-		if err := user.Join(config.ContextWithDatabase(r.Context(), db), &param); err != nil {
+		if err := auth.Join(config.ContextWithDatabase(r.Context(), db), &param); err != nil {
 			rw.WriteHeader(http.StatusBadRequest)
 			rw.Write([]byte(err.Error()))
 			return
@@ -63,7 +63,7 @@ func Join(db *sql.DB) http.HandlerFunc {
 //
 //		req = req.WithContext(ctx)
 //
-//		u, err := user.UserFromContext(ctx)
+//		u, err := auth.UserFromContext(ctx)
 //
 //		if err != nil {
 //			res.WriteHeader(http.StatusUnauthorized)

@@ -1,4 +1,4 @@
-package user
+package auth
 
 import (
 	"anyweb/config"
@@ -8,10 +8,10 @@ import (
 )
 
 var (
-	ErrNotSaveUserInContext = errors.New("not found user in context")
+	ErrNotSaveUserInContext = errors.New("not found auth in context")
 )
 
-type User struct {
+type Member struct {
 	id       int64 // BIGINT
 	email    string
 	password string
@@ -19,19 +19,19 @@ type User struct {
 	gender   bool
 }
 
-func NewUser(email, password, name string, gender bool) *User {
-	return &User{email: email, password: password, name: name, gender: gender}
+func NewMember(email, password, name string, gender bool) *Member {
+	return &Member{email: email, password: password, name: name, gender: gender}
 }
 
-func (u *User) Email() string {
+func (u *Member) Email() string {
 	return u.email
 }
 
-func (u *User) Password() string {
+func (u *Member) Password() string {
 	return u.password
 }
 
-func (u *User) UpdatePassword(ctx context.Context, password string) string {
+func (u *Member) UpdatePassword(ctx context.Context, password string) string {
 	ctx, cancel := context.WithCancel(ctx)
 
 	defer cancel()
@@ -45,7 +45,7 @@ func (u *User) UpdatePassword(ctx context.Context, password string) string {
 	return string(encPwd)
 }
 
-func (u *User) MatchPassword(password string) error {
+func (u *Member) MatchPassword(password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(u.password), []byte(password))
 }
 func EncryptPassword(password string) string {
@@ -56,12 +56,12 @@ func EncryptPassword(password string) string {
 
 }
 
-func ContextWithUser(ctx context.Context, u *User) context.Context {
-	return context.WithValue(ctx, config.UserKey, u)
+func ContextWithMember(ctx context.Context, u *Member) context.Context {
+	return context.WithValue(ctx, config.MemberKey, u)
 }
 
-func UserFromContext(ctx context.Context) (*User, error) {
-	if u, ok := ctx.Value(config.UserKey).(*User); ok {
+func MemberFromContext(ctx context.Context) (*Member, error) {
+	if u, ok := ctx.Value(config.MemberKey).(*Member); ok {
 		return u, nil
 	} else {
 		return nil, ErrNotSaveUserInContext

@@ -1,4 +1,4 @@
-package user
+package auth
 
 type InfoResponseBody struct {
 	Email    string `json:"email"`
