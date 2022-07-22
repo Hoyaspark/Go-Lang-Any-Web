@@ -13,7 +13,7 @@ var (
 	ErrDuplicateEmail = errors.New("duplicate user")
 )
 
-func Login(ctx context.Context, u *User) (*util.JwtToken, error) {
+func Login(ctx context.Context, param *LoginRequestBody) (*util.JwtToken, error) {
 
 	db, err := config.DatabaseFromContext(ctx)
 
@@ -21,33 +21,21 @@ func Login(ctx context.Context, u *User) (*util.JwtToken, error) {
 		return nil, err
 	}
 
-	tx, err := db.Begin()
+	repo := NewUserRepository(ctx, nil, db)
+
+	u, err := repo.findPasswordByEmail(param)
 
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
 
-	defer tx.Rollback()
-
-	var pwd string
-
-	if err := tx.QueryRow("SELECT U.password FROM user AS U WHERE U.email = ?", u.Email).Scan(&pwd); err != nil {
+	if err := u.MatchPassword(param.Password); err != nil {
 		log.Println(err)
 		return nil, err
 	}
 
-	if err := u.MatchPassword(pwd); err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	if err := tx.Commit(); err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	return util.GenerateJwtToken(u.Email)
+	return util.GenerateJwtToken(param.Email)
 }
 
 func Join(ctx context.Context, u *User) error {
@@ -66,11 +54,11 @@ func Join(ctx context.Context, u *User) error {
 	defer tx.Rollback()
 
 	var count int
-	if err := tx.QueryRow("SELECT count(*) FROM user AS u WHERE u.email = ?", u.Email).Scan(&count); err != nil || count != 0 {
+	if err := tx.QueryRow("SELECT count(*) FROM user AS u WHERE u.email = ?", u.email).Scan(&count); err != nil || count != 0 {
 		return ErrDuplicateEmail
 	}
 
-	if _, err := tx.Exec("INSERT INTO user(email,password,name,gender) VALUES (?,?,?,?)", u.Email, u.EncryptPassword(), u.Name, u.Gender); err != nil {
+	if _, err := tx.Exec("INSERT INTO user(email,password,name,gender) VALUES (?,?,?,?)", u.email, u.EncryptPassword(), u.name, u.gender); err != nil {
 		return err
 	}
 
@@ -79,4 +67,23 @@ func Join(ctx context.Context, u *User) error {
 	}
 
 	return nil
+}
+
+func GetUserInfo(ctx context.Context, u *User) error {
+	db, err := config.DatabaseFromContext(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	tx, err := db.Begin()
+
+	if err != nil {
+		return err
+	}
+
+	defer tx.Rollback()
+
+	tx.QueryRow("SELECT * FROM user as u WHERE u.email = ?", u.email).Scan()
+
 }

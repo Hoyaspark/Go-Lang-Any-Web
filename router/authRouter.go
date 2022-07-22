@@ -11,13 +11,13 @@ import (
 func Login(db *sql.DB) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 
-		var u user.User
+		var param user.LoginRequestBody
 
-		if err := json.NewDecoder(r.Body).Decode(&u); err != nil {
+		if err := json.NewDecoder(r.Body).Decode(&param); err != nil {
 			panic(err)
 		}
 
-		res, err := user.Login(config.ContextWithDatabase(r.Context(), db), &u)
+		res, err := user.Login(config.ContextWithDatabase(r.Context(), db), &param)
 
 		if err != nil {
 			rw.WriteHeader(http.StatusBadRequest)
@@ -52,4 +52,23 @@ func Join(db *sql.DB) http.HandlerFunc {
 		rw.Write([]byte("Success"))
 
 	}
+}
+
+func MyPage(db *sql.DB) http.HandlerFunc {
+	return func(res http.ResponseWriter, req *http.Request) {
+		ctx := req.Context()
+
+		ctx = config.ContextWithDatabase(ctx, db)
+
+		req = req.WithContext(ctx)
+
+		u, err := user.UserFromContext(ctx)
+
+		if err != nil {
+			res.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+	}
+
 }

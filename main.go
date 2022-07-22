@@ -5,7 +5,9 @@ import (
 	"anyweb/router"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"log"
 	"net/http"
+	"runtime"
 	"time"
 )
 
@@ -26,6 +28,12 @@ func main() {
 	apiRouter.Group(func(r chi.Router) {
 		r.Post("/auth/login", router.Login(db))
 		r.Post("/auth/register", router.Join(db))
+		r.Get("/test", func(rw http.ResponseWriter, r *http.Request) {
+			log.Println(runtime.NumGoroutine())
+
+			time.Sleep(time.Second * 5)
+			rw.Write([]byte("Hello, Worlds!"))
+		})
 	})
 
 	apiRouter.Group(func(r chi.Router) {

@@ -12,11 +12,19 @@ var (
 )
 
 type User struct {
-	Id       int64 // BIGINT
-	Email    string
-	Password string
-	Name     string
-	Gender   bool
+	id       int64 // BIGINT
+	email    string
+	password string
+	name     string
+	gender   bool
+}
+
+func (u *User) Email() string {
+	return u.email
+}
+
+func (u *User) Password() string {
+	return u.password
 }
 
 func (u *User) UpdatePassword(ctx context.Context, password string) string {
@@ -35,14 +43,14 @@ func (u *User) UpdatePassword(ctx context.Context, password string) string {
 
 func (u *User) EncryptPassword() string {
 
-	enc, _ := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+	enc, _ := bcrypt.GenerateFromPassword([]byte(u.password), bcrypt.DefaultCost)
 
 	return string(enc)
 
 }
 
 func (u *User) MatchPassword(password string) error {
-	return bcrypt.CompareHashAndPassword([]byte(password), []byte(u.Password))
+	return bcrypt.CompareHashAndPassword([]byte(u.password), []byte(password))
 }
 
 func ContextWithUser(ctx context.Context, u *User) context.Context {
