@@ -11,3 +11,10 @@ type LoginRequestBody struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
+type JoinRequestBody struct {
+	Email    string
+	Password string
+	Name     string
+	Gender   bool
+}

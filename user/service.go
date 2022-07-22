@@ -4,13 +4,7 @@ import (
 	"anyweb/config"
 	"anyweb/util"
 	"context"
-	"errors"
 	"log"
-)
-
-var (
-	ErrNotFoundUser   = errors.New("not found user in database")
-	ErrDuplicateEmail = errors.New("duplicate user")
 )
 
 func Login(ctx context.Context, param *LoginRequestBody) (*util.JwtToken, error) {
@@ -23,7 +17,7 @@ func Login(ctx context.Context, param *LoginRequestBody) (*util.JwtToken, error)
 
 	repo := NewUserRepository(ctx, nil, db)
 
-	u, err := repo.findPasswordByEmail(param)
+	u, err := repo.findPasswordByEmail(param.Email)
 
 	if err != nil {
 		log.Println(err)
@@ -38,33 +32,20 @@ func Login(ctx context.Context, param *LoginRequestBody) (*util.JwtToken, error)
 	return util.GenerateJwtToken(param.Email)
 }
 
-func Join(ctx context.Context, u *User) error {
+func Join(ctx context.Context, param *JoinRequestBody) error {
 	db, err := config.DatabaseFromContext(ctx)
 
 	if err != nil {
 		return err
 	}
 
-	tx, err := db.Begin()
+	repo := NewUserRepository(ctx, nil, db)
 
-	if err != nil {
+	if _, err := repo.findByEmail(param.Email); err != nil {
 		return err
 	}
 
-	defer tx.Rollback()
-
-	row, err := tx.Query("SELECT u.id FROM user AS u WHERE u.email = ?", u.email)
-	row.Next()
-	if err != nil {
-		log.Println(err)
-		return ErrDuplicateEmail
-	}
-
-	if _, err := tx.Exec("INSERT INTO user(email,password,name,gender) VALUES (?,?,?,?)", u.email, u.EncryptPassword(), u.name, u.gender); err != nil {
-		return err
-	}
-
-	if err := tx.Commit(); err != nil {
+	if err := repo.InsertIntoUser(NewUser(param.Email, EncryptPassword(param.Password), param.Name, param.Gender)); err != nil {
 		return err
 	}
 

@@ -35,15 +35,15 @@ func LoginRoute(db *sql.DB) http.HandlerFunc {
 
 func Join(db *sql.DB) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
-		var u user.User
+		var param user.JoinRequestBody
 
-		err := json.NewDecoder(r.Body).Decode(&u)
+		err := json.NewDecoder(r.Body).Decode(&param)
 
 		if err != nil {
 			panic(err)
 		}
 
-		if err := user.Join(config.ContextWithDatabase(r.Context(), db), &u); err != nil {
+		if err := user.Join(config.ContextWithDatabase(r.Context(), db), &param); err != nil {
 			rw.WriteHeader(http.StatusBadRequest)
 			rw.Write([]byte(err.Error()))
 			return

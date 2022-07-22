@@ -19,8 +19,8 @@ type User struct {
 	gender   bool
 }
 
-func NewUser(email string) *User {
-	return &User{email: email}
+func NewUser(email, password, name string, gender bool) *User {
+	return &User{email: email, password: password, name: name, gender: gender}
 }
 
 func (u *User) Email() string {
@@ -45,16 +45,15 @@ func (u *User) UpdatePassword(ctx context.Context, password string) string {
 	return string(encPwd)
 }
 
-func (u *User) EncryptPassword() string {
+func (u *User) MatchPassword(password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(u.password), []byte(password))
+}
+func EncryptPassword(password string) string {
 
-	enc, _ := bcrypt.GenerateFromPassword([]byte(u.password), bcrypt.DefaultCost)
+	enc, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 
 	return string(enc)
 
-}
-
-func (u *User) MatchPassword(password string) error {
-	return bcrypt.CompareHashAndPassword([]byte(u.password), []byte(password))
 }
 
 func ContextWithUser(ctx context.Context, u *User) context.Context {
