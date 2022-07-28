@@ -63,6 +63,10 @@ func GetUserInfo(ctx context.Context, m *Member) (*InfoResponseBody, error) {
 
 	u, err := repo.findByEmail(m.Email())
 
+	if err != nil && err != ErrDuplicateEmail {
+		return nil, err
+	}
+
 	return NewInfoResponseBody(u), nil
 
 }

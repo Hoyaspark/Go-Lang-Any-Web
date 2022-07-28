@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"log"
 	"sync"
 )
 
@@ -43,12 +44,14 @@ func (mr *MemberRepository) findByEmail(email string) (*Member, error) {
 	var u Member
 
 	if err := tx.QueryRow("SELECT u.email,u.password,u.name,u.gender FROM user AS u WHERE u.email = ?", email).Scan(&u.email, &u.password, &u.name, &u.gender); err == nil {
-		return nil, ErrDuplicateEmail
+		return &u, ErrDuplicateEmail
 	}
 
 	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
+
+	log.Println(&u)
 
 	return &u, nil
 }

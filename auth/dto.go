@@ -1,18 +1,16 @@
 package auth
 
 type InfoResponseBody struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Name     string `json:"name"`
-	Gender   bool   `json:"gender"`
+	Email  string `json:"email"`
+	Name   string `json:"name"`
+	Gender bool   `json:"gender"`
 }
 
 func NewInfoResponseBody(m *Member) *InfoResponseBody {
 	return &InfoResponseBody{
-		Email:    m.email,
-		Password: m.password,
-		Name:     m.name,
-		Gender:   m.gender,
+		Email:  m.email,
+		Name:   m.name,
+		Gender: m.gender,
 	}
 }
 

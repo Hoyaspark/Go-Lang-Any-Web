@@ -48,6 +48,7 @@ func (u *Member) UpdatePassword(ctx context.Context, password string) string {
 func (u *Member) MatchPassword(password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(u.password), []byte(password))
 }
+
 func EncryptPassword(password string) string {
 
 	enc, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)

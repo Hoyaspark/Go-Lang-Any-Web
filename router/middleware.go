@@ -67,7 +67,7 @@ func AuthMiddleware(h http.Handler) http.Handler {
 			return
 		}
 
-		ctx = auth.ContextWithMember(ctx, auth.NewMember("", e, "", false))
+		ctx = auth.ContextWithMember(ctx, auth.NewMember(e, "", "", false))
 
 		r = r.WithContext(ctx)
 

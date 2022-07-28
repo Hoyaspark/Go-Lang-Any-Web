@@ -72,6 +72,7 @@ func MyPageRoute(db *sql.DB) http.HandlerFunc {
 		r, err := auth.GetUserInfo(ctx, m)
 
 		if err != nil {
+			res.Write([]byte(err.Error()))
 			res.WriteHeader(http.StatusInternalServerError)
 			return
 		}
