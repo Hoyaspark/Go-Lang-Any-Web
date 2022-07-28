@@ -15,7 +15,7 @@ var (
 type Repository interface {
 	findByEmail(email string) (*Member, error)
 	findPasswordByEmail(email string) (*Member, error)
-	InsertIntoUser(user *Member) error
+	insertIntoUser(user *Member) error
 }
 
 type MemberRepository struct {
@@ -75,7 +75,7 @@ func (mr *MemberRepository) findPasswordByEmail(email string) (*Member, error) {
 	return &u, nil
 }
 
-func (mr *MemberRepository) InsertIntoUser(u *Member) error {
+func (mr *MemberRepository) insertIntoUser(u *Member) error {
 	tx, err := mr.db.Begin()
 
 	if err != nil {

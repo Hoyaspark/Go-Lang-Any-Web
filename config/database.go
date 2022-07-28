@@ -22,9 +22,9 @@ func NewDatabase() *sql.DB {
 	checkErrForPanic(err)
 
 	// 항상 연결되어있는 커넥션 풀 갯수 설정
-	db.SetMaxIdleConns(5)
+	db.SetMaxIdleConns(30)
 	// 최대로 연결할 수 있는 커넥션 갯수 설정
-	db.SetMaxOpenConns(10)
+	db.SetMaxOpenConns(50)
 
 	return db
 }

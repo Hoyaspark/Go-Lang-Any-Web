@@ -7,6 +7,15 @@ type InfoResponseBody struct {
 	Gender   bool   `json:"gender"`
 }
 
+func NewInfoResponseBody(m *Member) *InfoResponseBody {
+	return &InfoResponseBody{
+		Email:    m.email,
+		Password: m.password,
+		Name:     m.name,
+		Gender:   m.gender,
+	}
+}
+
 type LoginRequestBody struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`

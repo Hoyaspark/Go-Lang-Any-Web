@@ -54,22 +54,32 @@ func JoinRoute(db *sql.DB) http.HandlerFunc {
 	}
 }
 
-//
-//func MyPage(db *sql.DB) http.HandlerFunc {
-//	return func(res http.ResponseWriter, req *http.Request) {
-//		ctx := req.Context()
-//
-//		ctx = config.ContextWithDatabase(ctx, db)
-//
-//		req = req.WithContext(ctx)
-//
-//		u, err := auth.UserFromContext(ctx)
-//
-//		if err != nil {
-//			res.WriteHeader(http.StatusUnauthorized)
-//			return
-//		}
-//
-//	}
-//
-//}
+func MyPageRoute(db *sql.DB) http.HandlerFunc {
+	return func(res http.ResponseWriter, req *http.Request) {
+		ctx := req.Context()
+
+		ctx = config.ContextWithDatabase(ctx, db)
+
+		req = req.WithContext(ctx)
+
+		m, err := auth.MemberFromContext(ctx)
+
+		if err != nil {
+			res.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		r, err := auth.GetUserInfo(ctx, m)
+
+		if err != nil {
+			res.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		if err := json.NewEncoder(res).Encode(r); err != nil {
+			res.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	}
+
+}

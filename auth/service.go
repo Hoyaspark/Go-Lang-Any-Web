@@ -45,28 +45,24 @@ func Join(ctx context.Context, param *JoinRequestBody) error {
 		return err
 	}
 
-	if err := repo.InsertIntoUser(NewMember(param.Email, EncryptPassword(param.Password), param.Name, param.Gender)); err != nil {
+	if err := repo.insertIntoUser(NewMember(param.Email, EncryptPassword(param.Password), param.Name, param.Gender)); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-//func GetUserInfo(ctx context.Context, u *Member) error {
-//	db, err := config.DatabaseFromContext(ctx)
-//
-//	if err != nil {
-//		return err
-//	}
-//
-//	tx, err := db.Begin()
-//
-//	if err != nil {
-//		return err
-//	}
-//
-//	defer tx.Rollback()
-//
-//	tx.QueryRow("SELECT * FROM auth as u WHERE u.email = ?", u.email).Scan()
-//
-//}
+func GetUserInfo(ctx context.Context, m *Member) (*InfoResponseBody, error) {
+	db, err := config.DatabaseFromContext(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	repo := NewMemberRepository(ctx, nil, db)
+
+	u, err := repo.findByEmail(m.Email())
+
+	return NewInfoResponseBody(u), nil
+
+}
