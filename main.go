@@ -21,15 +21,16 @@ func main() {
 
 	apiRouter.Use(middleware.DefaultLogger)
 	apiRouter.Use(middleware.Recoverer)
-	apiRouter.Use(router.ResponseMiddleware)
 
 	apiRouter.Group(func(r chi.Router) {
+		r.Use(router.ResponseMiddleware)
 		r.Post("/auth/login", router.LoginRoute(db))
 		r.Post("/auth/register", router.JoinRoute(db))
 	})
 
 	apiRouter.Group(func(r chi.Router) {
 		r.Use(router.AuthMiddleware)
+		r.Use(router.ResponseMiddleware)
 		r.Get("/my", router.MyPageRoute(db))
 		r.Get("/board", func(rw http.ResponseWriter, r *http.Request) {
 			rw.Write([]byte("Hello, Worlds!"))

@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"log"
 	"sync"
 )
 
@@ -50,8 +49,6 @@ func (mr *MemberRepository) findByEmail(email string) (*Member, error) {
 	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
-
-	log.Println(&u)
 
 	return &u, nil
 }

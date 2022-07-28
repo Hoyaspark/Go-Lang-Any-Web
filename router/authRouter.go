@@ -65,6 +65,7 @@ func MyPageRoute(db *sql.DB) http.HandlerFunc {
 		m, err := auth.MemberFromContext(ctx)
 
 		if err != nil {
+			res.Header().Set("err", err.Error())
 			res.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -72,13 +73,13 @@ func MyPageRoute(db *sql.DB) http.HandlerFunc {
 		r, err := auth.GetUserInfo(ctx, m)
 
 		if err != nil {
-			res.Write([]byte(err.Error()))
+			res.Header().Set("err", err.Error())
 			res.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
 		if err := json.NewEncoder(res).Encode(r); err != nil {
-			res.Write([]byte(err.Error()))
+			res.Header().Set("err", err.Error())
 			res.WriteHeader(http.StatusInternalServerError)
 			return
 		}
