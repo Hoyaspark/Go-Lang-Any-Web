@@ -78,6 +78,7 @@ func MyPageRoute(db *sql.DB) http.HandlerFunc {
 		}
 
 		if err := json.NewEncoder(res).Encode(r); err != nil {
+			res.Write([]byte(err.Error()))
 			res.WriteHeader(http.StatusInternalServerError)
 			return
 		}

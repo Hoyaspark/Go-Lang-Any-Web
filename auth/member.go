@@ -16,10 +16,10 @@ type Member struct {
 	email    string
 	password string
 	name     string
-	gender   bool
+	gender   Gender
 }
 
-func NewMember(email, password, name string, gender bool) *Member {
+func NewMember(email, password, name string, gender Gender) *Member {
 	return &Member{email: email, password: password, name: name, gender: gender}
 }
 
